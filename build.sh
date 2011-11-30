@@ -78,7 +78,11 @@ popd
 cp swftools-0.9.1/lib/librfxswf.a lib/librfxswf-i386.a
 
 #
-cp swftools-0.9.1/lib/rfxswf.h include/
+cp swftools-0.9.1/config.h include/
+mkdir include/swftools
+cp swftools-0.9.1/lib/*.h include/swftools
+mkdir include/swftools/as3
+cp swftools-0.9.1/lib/as3/*.h include/swftools/as3
 
 lipo \
 	lib/librfxswf-armv6.a \
