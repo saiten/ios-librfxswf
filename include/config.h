@@ -105,7 +105,7 @@
 #define HAVE_PTHREAD_H 1
 
 /* Define if you have the <jpeglib.h> header file.  */
-#define HAVE_JPEGLIB_H 1
+
 
 /* Define if you have the <ndir.h> header file.  */
 /* #undef HAVE_NDIR_H */
@@ -204,11 +204,11 @@
 #define USE_GZIP 1
 
 /* let ttf2pt1 use libfreetype */
-#define USE_FREETYPE 1
+
 
 /* have/use freetype library */
-#define HAVE_FREETYPE 1
-#define HAVE_FREETYPE_FREETYPE_H 1
+
+
 
 /* have/use freetype library */
 /* #undef HAVE_AVIFILE */

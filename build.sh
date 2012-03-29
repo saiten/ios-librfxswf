@@ -29,10 +29,13 @@ CFLAGS="-isysroot $DEVICE_SDK -arch armv6" \
 LDFLAGS="-dynamiclib -L $DEVICE_SDK/usr/lib" \
 ./configure --host=arm-apple-darwin &> /tmp/swftools-armv6.log
 
+perl -i -pe 's|#define HAVE_JPEGLIB_H 1||g' config.h
 cd lib
-make librfxswf.a &> /tmp/swftools-armv6.log
+patch -u jpeg.c < ../../jpeg.c.patch
+make libbase.a librfxswf.a >> /tmp/swftools-armv6.log
 
 popd
+cp swftools-0.9.1/lib/libbase.a lib/libbase-armv6.a
 cp swftools-0.9.1/lib/librfxswf.a lib/librfxswf-armv6.a
 
 # armv7
@@ -51,10 +54,13 @@ CFLAGS="-isysroot $DEVICE_SDK -arch armv7" \
 LDFLAGS="-dynamiclib -L $DEVICE_SDK/usr/lib" \
 ./configure --host=arm-apple-darwin &> /tmp/swftools-armv7.log
 
+perl -i -pe 's|#define HAVE_JPEGLIB_H 1||g' config.h
 cd lib
-make librfxswf.a &> /tmp/swftools-armv7.log
+patch -u jpeg.c < ../../jpeg.c.patch
+make libbase.a librfxswf.a >> /tmp/swftools-armv7.log
 
 popd
+cp swftools-0.9.1/lib/libbase.a lib/libbase-armv7.a
 cp swftools-0.9.1/lib/librfxswf.a lib/librfxswf-armv7.a
 
 # i386
@@ -67,14 +73,20 @@ cd swftools-0.9.1
 CC=$SIMULATOR_PLATFORM/Developer/usr/bin/gcc \
 CXX=$SIMULATOR_PLATFORM/Developer/usr/bin/g++ \
 AR=$SIMULATOR_PLATFORM/Developer/usr/bin/ar \
-CFLAGS="-isysroot $SIMULATOR_SDK -I /usr/local/include -arch i386" \
+CFLAGS="-isysroot $SIMULATOR_SDK -arch i386" \
 LDFLAGS="-dynamiclib -L $SIMULATOR_SDK/usr/lib" \
 ./configure --host=i386-apple-darwin &> /tmp/swftools-i386.log
 
+perl -i -pe 's|#define HAVE_JPEGLIB_H 1||g' config.h
+perl -i -pe 's|#define USE_FREETYPE 1||g' config.h
+perl -i -pe 's|#define HAVE_FREETYPE 1||g' config.h
+perl -i -pe 's|#define HAVE_FREETYPE_FREETYPE_H 1||g' config.h
 cd lib
-make librfxswf.a &> /tmp/swftools-i386.log
+patch -u jpeg.c < ../../jpeg.c.patch
+make libbase.a librfxswf.a >> /tmp/swftools-i386.log
 
 popd
+cp swftools-0.9.1/lib/libbase.a lib/libbase-i386.a
 cp swftools-0.9.1/lib/librfxswf.a lib/librfxswf-i386.a
 
 #
@@ -85,7 +97,16 @@ mkdir include/swftools/as3
 cp swftools-0.9.1/lib/as3/*.h include/swftools/as3
 
 lipo \
+	lib/libbase-armv6.a \
+	lib/libbase-armv7.a \
+	lib/libbase-i386.a \
+	-create -output lib/libbase.a
+	
+lipo \
 	lib/librfxswf-armv6.a \
+	lib/librfxswf-armv7.a \
+	lib/librfxswf-i386.a \
 	-create -output lib/librfxswf.a
 
+rm -f lib/libbase-*.a
 rm -f lib/librfxswf-*.a
