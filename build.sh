@@ -1,11 +1,12 @@
 #!/bin/sh
 
-IOS_VERSION=5.0
-DEVICE_PLATFORM="/Developer/Platforms/iPhoneOS.platform"
-SIMULATOR_PLATFORM="/Developer/Platforms/iPhoneSimulator.platform"
-DEVICE_SDK="${DEVICE_PLATFORM}/Developer/SDKs/iPhoneOS${IOS_VERSION}.sdk"
-SIMULATOR_SDK="${SIMULATOR_PLATFORM}/Developer/SDKs/iPhoneSimulator${IOS_VERSION}.sdk"
+DEVELOPER="/Applications/Xcode.app/Contents/Developer"
+SDK_VERSION="6.0"
 
+DEVICE_PLATFORM="${DEVELOPER}/Platforms/iPhoneOS.platform"
+SIMULATOR_PLATFORM="${DEVELOPER}/Platforms/iPhoneSimulator.platform"
+DEVICE_SDK="${DEVICE_PLATFORM}/Developer/SDKs/iPhoneOS${SDK_VERSION}.sdk"
+SIMULATOR_SDK="${SIMULATOR_PLATFORM}/Developer/SDKs/iPhoneSimulator${SDK_VERSION}.sdk"
 rm -rf include lib
 
 rm -f /tmp/swftools-*.log
@@ -13,81 +14,43 @@ rm -f /tmp/swftools-*.log
 mkdir include
 mkdir lib
 
-#armv6
-rm -rf swftools-0.9.1
-tar xvzf swftools-0.9.1.tar.gz
+# build
 
-pushd .
-cd swftools-0.9.1
+build()
+{
+	ARCH=$1
+	PLATFORM=$2
+	SDK=$3
 
-perl -i -pe 's|\*-pc-\* \)|*-pc-* \| *arm* )|g' configure
+	rm -rf swftools-0.9.1
+	tar xvzf swftools-0.9.1.tar.gz
 
-CC=$DEVICE_PLATFORM/Developer/usr/bin/gcc \
-CXX=$DEVICE_PLATFORM/Developer/usr/bin/g++ \
-AR=$DEVICE_PLATFORM/Developer/usr/bin/ar \
-CFLAGS="-isysroot $DEVICE_SDK -arch armv6" \
-LDFLAGS="-dynamiclib -L $DEVICE_SDK/usr/lib" \
-./configure --host=arm-apple-darwin &> /tmp/swftools-armv6.log
+	pushd .
+	cd swftools-0.9.1
 
-perl -i -pe 's|#define HAVE_JPEGLIB_H 1||g' config.h
-cd lib
-patch -u jpeg.c < ../../jpeg.c.patch
-make libbase.a librfxswf.a >> /tmp/swftools-armv6.log
+	perl -i -pe 's|\*-pc-\* \)|*-pc-* \| *arm* )|g' configure
 
-popd
-cp swftools-0.9.1/lib/libbase.a lib/libbase-armv6.a
-cp swftools-0.9.1/lib/librfxswf.a lib/librfxswf-armv6.a
+	CC=$PLATFORM/Developer/usr/bin/gcc \
+	CXX=$PLATFORM/Developer/usr/bin/g++ \
+	AR=$PLATFORM/Developer/usr/bin/ar \
+    CFLAGS="-isysroot $SDK -arch $ARCH" \
+    LDFLAGS="-dynamiclib -L $SDK/usr/lib" \
+    ./configure --host=arm-apple-darwin &> "/tmp/swftools-$ARCH.log"
 
-# armv7
-rm -rf swftools-0.9.1
-tar xvzf swftools-0.9.1.tar.gz
+	perl -i -pe 's|#define HAVE_JPEGLIB_H 1||g' config.h
+	cd lib
+	patch -u jpeg.c < ../../jpeg.c.patch
+	make libbase.a librfxswf.a >> "/tmp/swftools-$ARCH.log"
 
-pushd .
-cd swftools-0.9.1
+	popd
 
-perl -i -pe 's|\*-pc-\* \)|*-pc-* \| *arm* )|g' configure
+	cp swftools-0.9.1/lib/libbase.a "lib/libbase-$ARCH.a"
+	cp swftools-0.9.1/lib/librfxswf.a "lib/librfxswf-$ARCH.a"
+}
 
-CC=$DEVICE_PLATFORM/Developer/usr/bin/gcc \
-CXX=$DEVICE_PLATFORM/Developer/usr/bin/g++ \
-AR=$DEVICE_PLATFORM/Developer/usr/bin/ar \
-CFLAGS="-isysroot $DEVICE_SDK -arch armv7" \
-LDFLAGS="-dynamiclib -L $DEVICE_SDK/usr/lib" \
-./configure --host=arm-apple-darwin &> /tmp/swftools-armv7.log
-
-perl -i -pe 's|#define HAVE_JPEGLIB_H 1||g' config.h
-cd lib
-patch -u jpeg.c < ../../jpeg.c.patch
-make libbase.a librfxswf.a >> /tmp/swftools-armv7.log
-
-popd
-cp swftools-0.9.1/lib/libbase.a lib/libbase-armv7.a
-cp swftools-0.9.1/lib/librfxswf.a lib/librfxswf-armv7.a
-
-# i386
-rm -rf swftools-0.9.1
-tar xvzf swftools-0.9.1.tar.gz
-
-pushd .
-cd swftools-0.9.1
-
-CC=$SIMULATOR_PLATFORM/Developer/usr/bin/gcc \
-CXX=$SIMULATOR_PLATFORM/Developer/usr/bin/g++ \
-AR=$SIMULATOR_PLATFORM/Developer/usr/bin/ar \
-CFLAGS="-isysroot $SIMULATOR_SDK -arch i386" \
-LDFLAGS="-dynamiclib -L $SIMULATOR_SDK/usr/lib" \
-./configure --host=i386-apple-darwin &> /tmp/swftools-i386.log
-
-perl -i -pe 's|#define HAVE_JPEGLIB_H 1||g' config.h
-perl -i -pe 's|#define USE_FREETYPE 1||g' config.h
-perl -i -pe 's|#define HAVE_FREETYPE 1||g' config.h
-perl -i -pe 's|#define HAVE_FREETYPE_FREETYPE_H 1||g' config.h
-cd lib
-patch -u jpeg.c < ../../jpeg.c.patch
-make libbase.a librfxswf.a >> /tmp/swftools-i386.log
-
-popd
-cp swftools-0.9.1/lib/libbase.a lib/libbase-i386.a
-cp swftools-0.9.1/lib/librfxswf.a lib/librfxswf-i386.a
+build "armv7" "$DEVICE_PLATFORM" "$DEVICE_SDK"
+build "armv7s" "$DEVICE_PLATFORM" "$DEVICE_SDK"
+build "i386" "$SIMULATOR_PLATFORM" "$SIMULATOR_SDK"
 
 #
 cp swftools-0.9.1/config.h include/
@@ -97,14 +60,14 @@ mkdir include/swftools/as3
 cp swftools-0.9.1/lib/as3/*.h include/swftools/as3
 
 lipo \
-	lib/libbase-armv6.a \
 	lib/libbase-armv7.a \
+	lib/libbase-armv7s.a \
 	lib/libbase-i386.a \
 	-create -output lib/libbase.a
 	
 lipo \
-	lib/librfxswf-armv6.a \
 	lib/librfxswf-armv7.a \
+	lib/librfxswf-armv7s.a \
 	lib/librfxswf-i386.a \
 	-create -output lib/librfxswf.a
 
