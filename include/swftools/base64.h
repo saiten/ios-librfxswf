@@ -1,11 +1,7 @@
-/* MD5.h
+/* base64.h
 
-   Header for the FreeBSD MD5 password hashing algorithm
+   Copyright (c) 2010 Matthias Kramm <kramm@quiss.org>
 
-   Part of the swftools package.
-
-   Copyright (c) 2003, 2004 Matthias Kramm <kramm@quiss.org>
- 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
@@ -18,15 +14,12 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+*/
 
+#ifndef __base64_h__
+#define __base64_h__
 
-#ifndef __MD5_h__
-#define __MD5_h__
-char * crypt_md5(const char *pw, const char *salt);
-void hash_md5(const unsigned char*buf, int len, unsigned char*dest); //dest needs to be 16 bytes wide
+void write_base64(FILE*fi, const char* s);
 
-void* initialize_md5();
-void update_md5(void*ctx, unsigned char*data, int len);
-void finish_md5(void*ctx, unsigned char*dest);
 #endif

@@ -50,6 +50,8 @@ char* stripFilename(const char*filename, const char*newext);
 char* mktempname(char*buffer, const char*ext);
 
 void move_file(const char*from, const char*to);
+char file_exists(const char*filename);
+int file_size(const char*filename);
 
 #ifdef __cplusplus
 }

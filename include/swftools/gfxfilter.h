@@ -53,7 +53,7 @@ typedef struct _gfxfilter
     void (*fillgradient)(struct _gfxfilter*in, gfxline_t*line, gfxgradient_t*gradient, gfxgradienttype_t type, gfxmatrix_t*gradcoord2devcoord, struct _gfxdevice*out); //?
     void (*addfont)(struct _gfxfilter*in, gfxfont_t*font, struct _gfxdevice*out);
     void (*drawchar)(struct _gfxfilter*in, gfxfont_t*font, int glyph, gfxcolor_t*color, gfxmatrix_t*matrix, struct _gfxdevice*out);
-    void (*drawlink)(struct _gfxfilter*in, gfxline_t*line, const char*action, struct _gfxdevice*out);
+    void (*drawlink)(struct _gfxfilter*in, gfxline_t*line, const char*action, const char*text, struct _gfxdevice*out);
     void (*endpage)(struct _gfxfilter*in, struct _gfxdevice*out);
     gfxresult_t* (*finish)(struct _gfxfilter*in, struct _gfxdevice*out);
 
@@ -95,10 +95,12 @@ void gfxfilterchain_destroy(gfxfilterchain_t*chain);
 
 /* known filters */
 void gfxfilter_maketransparent_init(gfxfilter_t*f, U8 alpha);
+void gfxfilter_flatten_init(gfxfilter_t*f);
+void gfxfilter_rescale_images_init(gfxfilter_t*f);
 void gfxtwopassfilter_remove_font_transforms_init(gfxtwopassfilter_t*f);
 void gfxtwopassfilter_one_big_font_init(gfxtwopassfilter_t*f);
 void gfxtwopassfilter_vectors_to_glyphs_init(gfxtwopassfilter_t*f);
-
+void gfxtwopassfilter_remove_invisible_characters_init(gfxtwopassfilter_t*f);
 
 #ifdef __cplusplus
 }

@@ -30,11 +30,6 @@ typedef struct _gfxglyph
     const char*name;
 } gfxglyph_t;
 
-typedef struct _gfxkerning
-{
-    int c1,c2,advance;
-} gfxkerning_t;
-
 typedef struct _gfxfont
 {
     const char*id;
@@ -45,9 +40,6 @@ typedef struct _gfxfont
 
     gfxglyph_t*glyphs;
     int* unicode2glyph;
-
-    gfxkerning_t*kerning;
-    int kerning_size;
 } gfxfont_t;
 
 typedef struct _gfxcolor
@@ -69,8 +61,8 @@ typedef struct _gfximage
     /* if the data contains an alpha layer (a != 255), the
        r,g,b values will have to be premultiplied */
     gfxcolor_t*data;
-    int width;
-    int height;
+    unsigned width;
+    unsigned height;
 } gfximage_t;
 
 /* gradients: A radial gradient will start at 0,0 and have a radius of 1,0 
@@ -129,7 +121,7 @@ typedef struct _gfxdevice
 
     void (*drawchar)(struct _gfxdevice*dev, gfxfont_t*font, int glyph, gfxcolor_t*color, gfxmatrix_t*matrix);
 
-    void (*drawlink)(struct _gfxdevice*dev, gfxline_t*line, const char*action);
+    void (*drawlink)(struct _gfxdevice*dev, gfxline_t*line, const char*action, const char*text);
     
     void (*endpage)(struct _gfxdevice*dev);
     

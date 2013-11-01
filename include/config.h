@@ -62,9 +62,6 @@
 /* Define if you have the lrand48 function.  */
 #define HAVE_LRAND48 1
 
-/* Define if you have the mkstemp function.  */
-#define HAVE_MKSTEMP 1
-
 /* Define if you have the popen function.  */
 #define HAVE_POPEN 1
 
@@ -105,7 +102,7 @@
 #define HAVE_PTHREAD_H 1
 
 /* Define if you have the <jpeglib.h> header file.  */
-
+/* #undef HAVE_JPEGLIB_H */
 
 /* Define if you have the <ndir.h> header file.  */
 /* #undef HAVE_NDIR_H */
@@ -174,7 +171,7 @@
 /* #undef HAVE_OUTPUTDEV_H */
 
 /* Define if you have the jpeg library (-ljpeg).  */
-#define HAVE_LIBJPEG 1
+/* #undef HAVE_LIBJPEG */
 
 /* Define if you have the pdf library (-lpdf).  */
 /* #undef HAVE_LIBPDF */
@@ -195,7 +192,7 @@
 #define PACKAGE "swftools"
 
 /* Version number of package */
-#define VERSION "0.9.1"
+#define VERSION "0.9.2"
 
 /* Typedefs */
 #define boolean int
@@ -204,11 +201,11 @@
 #define USE_GZIP 1
 
 /* let ttf2pt1 use libfreetype */
-#define USE_FREETYPE 1
+/* #undef USE_FREETYPE */
 
 /* have/use freetype library */
-#define HAVE_FREETYPE 1
-#define HAVE_FREETYPE_FREETYPE_H 1
+/* #undef HAVE_FREETYPE */
+/* #undef HAVE_FREETYPE_FREETYPE_H */
 
 /* have/use freetype library */
 /* #undef HAVE_AVIFILE */
@@ -276,15 +273,6 @@
 #ifdef HAVE_LIBZZIP
 #define HAVE_ZZIP 1
 #endif
-#endif
-
-#ifndef WIN32
-#define CHECKS
-#endif
-
-// supply a substitute calloc function if necessary
-#ifndef HAVE_CALLOC
-#define calloc rfx_calloc_replacement
 #endif
 
 //#ifdef HAVE_BUILTIN_EXPECT
